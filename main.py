@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QShortcut
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QKeySequence
-
+from funcoes import soma
 class Calculadora(QMainWindow):
     
     def __init__(self, **kwargs):
@@ -19,7 +19,20 @@ class Calculadora(QMainWindow):
         self.btn8.clicked.connect(lambda: self.addNumber(8))
         self.btn9.clicked.connect(lambda: self.addNumber(9))
         self.btn0.clicked.connect(lambda: self.addNumber(0))
+        self.btn_float.clicked.connect(self.addComma)
         self.limpar.clicked.connect(lambda:self.cleanDisplay("AC"))
+        self.btn_igual.clicked.connect(self.showResult)
+
+    def addComma(self):
+       ultimo = self.display.text()
+       if(ultimo.count(",") > 0):
+          resultado = ultimo
+       else:
+        resultado = ultimo + ","
+       
+       self.display.setText(resultado)
+
+
 
     def addNumber(self, numero):
        variavel =  self.display.text()
@@ -32,3 +45,15 @@ class Calculadora(QMainWindow):
     
     def cleanDisplay(self , clean):
         return self.display.setText("0")
+    
+    def showResult(self):
+       num1 = self.display.text()
+       num2 = 2
+       if ("," in num1):  
+           num1 = num1.replace(",",".")
+           num1 = float(num1)
+       else: 
+            num1 = int(num1)
+       result = soma(num1 , num2)
+       print(f'Numero: {result}')
+       print(f"Tipo:",  type(result))
