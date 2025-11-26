@@ -19,8 +19,12 @@ class Calculadora(QMainWindow):
         self.btn8.clicked.connect(lambda: self.addNumber(8))
         self.btn9.clicked.connect(lambda: self.addNumber(9))
         self.btn0.clicked.connect(lambda: self.addNumber(0))
+        self.btn_multiplicacao.clicked.connect(self.setOperation)
+        self.btn_subtracao.clicked.connect(self.setOperation)
+        self.btn_soma.clicked.connect(self.setOperation)
+        self.btn_divisao.clicked.connect(self.setOperation)
         self.btn_float.clicked.connect(self.addComma)
-        self.limpar.clicked.connect(lambda:self.cleanDisplay("AC"))
+        self.limpar.clicked.connect(self.cleanDisplay)
         self.btn_igual.clicked.connect(self.showResult)
 
     def addComma(self):
@@ -43,17 +47,36 @@ class Calculadora(QMainWindow):
         self.display.setText(variavel + str(numero))
         print(numero)
     
-    def cleanDisplay(self , clean):
-        return self.display.setText("0")
+    def cleanDisplay(self):
+        self.display.setText("0")
     
+    def setOperation(self):
+       result = self.display.text()
+       self.display_2.setText(result)
+       self.cleanDisplay()
+
+    def getNumberDisplay(self, display):
+        num = display.text()
+        if ("," in num):  
+           num = num.replace(",",".")
+           num = float(num)
+        else: 
+            num = int(num)
+        return num
+    def setNumberDisplay(self, number):
+       number = str(number)
+       number = number.replace("." , ",")
+       self.display.setText(number)
+
+    def setCalcDisplay(self, num1 , num2, operation):
+       num1 = str(num1).replace("." , ",")
+       num2 = str(num2).replace("." , ",")
+       result = f"{num1} {operation} {num2}"
+       self.display_2.setText(result)
+
     def showResult(self):
-       num1 = self.display.text()
-       num2 = 2
-       if ("," in num1):  
-           num1 = num1.replace(",",".")
-           num1 = float(num1)
-       else: 
-            num1 = int(num1)
+       num1 = self.getNumberDisplay(self.display)
+       num2 = self.getNumberDisplay(self.display_2)
        result = soma(num1 , num2)
-       print(f'Numero: {result}')
-       print(f"Tipo:",  type(result))
+       self.setNumberDisplay(result)
+       self.setCalcDisplay(num1 , num2 , "+")
