@@ -298,7 +298,7 @@ background-color:orange;
      <string>+/-</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="btn_restodivisao">
+   <widget class="QPushButton" name="btn_porcentagem">
     <property name="geometry">
      <rect>
       <x>420</x>

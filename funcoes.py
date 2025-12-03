@@ -15,3 +15,7 @@ def div(numero1, numero2):
         return "Não e possivel dividir por zero"
     resultado = numero1 / numero2
     return resultado
+
+def porc(numero1 , numero2):
+    return int((numero1 * numero2)/100)
+    
