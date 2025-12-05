@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QShortcut
 from PyQt5.uic import loadUi
 from PyQt5.QtGui import QKeySequence
+from PyQt5.QtCore import pyqtSlot, QTimer
 from funcoes import soma, sub , div ,mult, porc
 class Calculadora(QMainWindow):
     
@@ -10,6 +11,7 @@ class Calculadora(QMainWindow):
       self.show()
       self.num1 = 0
       self.num2 = 0
+      self.finish = False
       self.selectedOperation = None
       self.setOperationList = {
          "+": soma,
@@ -48,12 +50,37 @@ class Calculadora(QMainWindow):
          resultado = ultimo + ","
       self.display.setText(resultado)
 
+   def timerClean(self):
+      self.cronometro = QTimer(self)
+      self.cronometro.singleShot(3000 , self.cleanDisplay)
+      self.btn_comparativo.setEnabled(False)
+      self.btn_soma.setEnabled(False)
+      self.btn_subtracao.setEnabled(False)
+      self.btn_multiplicacao.setEnabled(False)
+      self.btn_divisao.setEnabled(False)
+      self.btn_porcentagem.setEnabled(False)
+      self.btn_igual.setEnabled(False)
+      self.cronometro = QTimer(self)
+      self.cronometro.singleShot(3000, self.timeOutClean)
 
+   def timeOutClean(self):
+      self.btn_comparativo.setEnabled(True)
+      self.btn_soma.setEnabled(True)
+      self.btn_subtracao.setEnabled(True)
+      self.btn_multiplicacao.setEnabled(True)
+      self.btn_divisao.setEnabled(True)
+      self.btn_porcentagem.setEnabled(True)
+      self.btn_igual.setEnabled(True)
+      self.display.setText("0")
+      self.display_2.setText("0")
+      self.selectedOperation = None
+      
 
    def addNumber(self, numero):
       self.limpar.setText("<-")
       variavel =  self.display.text()
-      if variavel == "0":
+      if variavel == "0" or self.finish:
+         self.finish = False
          resultado = str(numero)
       else:
          resultado = variavel + str(numero)
@@ -63,6 +90,7 @@ class Calculadora(QMainWindow):
       if self.limpar.text() == "AC":
          self.display.setText("0")
          self.display_2.setText("0")
+         self.num1 = 0
          self.num2 = 0
       else:
          ultimo = self.display.text()[:-1]
@@ -73,9 +101,9 @@ class Calculadora(QMainWindow):
 
            
    def invert(self):
-      numero = int(self.display.text())
+      numero = self.getNumberDisplay(self.display)
       numero = str(numero * -1)
-      self.display.setText(numero)
+      self.setNumberDisplay(numero)
       
    def percent(self):
       perc = self.getNumberDisplay(self.display)
@@ -113,15 +141,19 @@ class Calculadora(QMainWindow):
       self.display_2.setText(result)
 
    def showResult(self):
-      if self.num2 == 0:          
-         self.num2 = self.getNumberDisplay(self.display)
+      if self.selectedOperation:
+         if self.num2 == 0:          
+            self.num2 = self.getNumberDisplay(self.display)
+            
+         num1 = self.num1
+         num2 = self.num2
+         operation = self.setOperationList.get(self.selectedOperation)
          
-      num1 = self.num1
-      num2 = self.num2
-      operation = self.setOperationList.get(self.selectedOperation)
-      
-      result = operation(num1 , num2)
-      self.num1 = result
-      self.setNumberDisplay(result)
-      self.setCalcDisplay(num1 , num2 , self.selectedOperation)
-      self.limpar.setText("AC")
+         result = operation(num1 , num2)
+         self.num1 = result
+         self.setNumberDisplay(result)
+         self.setCalcDisplay(num1 , num2 , self.selectedOperation)
+         self.limpar.setText("AC")
+         self.finish = True
+         if isinstance(result , str):
+            self.timerClean()
