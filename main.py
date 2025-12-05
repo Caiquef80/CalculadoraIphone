@@ -3,11 +3,19 @@ from PyQt5.uic import loadUi
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtCore import pyqtSlot, QTimer
 from funcoes import soma, sub , div ,mult, porc
+from os import path 
+import sys
+
+def loadFile(file):
+   base_path = getattr(sys , "_MEIPASS" , path.dirname(path.abspath(__file__)))
+   return path.join(base_path , file)
+   
+
 class Calculadora(QMainWindow):
     
    def __init__(self, **kwargs):
       super().__init__(**kwargs)
-      loadUi("interface.ui", self)
+      loadUi(loadFile("interface.ui"), self)
       self.show()
       self.num1 = 0
       self.num2 = 0
@@ -73,6 +81,8 @@ class Calculadora(QMainWindow):
       self.btn_igual.setEnabled(True)
       self.display.setText("0")
       self.display_2.setText("0")
+      self.num1 = 0
+      self.num2 = 0
       self.selectedOperation = None
       
 
